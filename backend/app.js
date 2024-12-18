@@ -2,7 +2,8 @@ import express from 'express';
 import dotenv from "dotenv";
 dotenv.config();
 import morgan from 'morgan';
-
+import 'express-async-errors'
+import cookieParser from 'cookie-parser';
 import { connectDB } from './db/connect.js';
 const app = express();
 import authRouter from './routes/authRoutes.js'
@@ -11,11 +12,15 @@ import authRouter from './routes/authRoutes.js'
 import notFoundMiddleware from './middleware/not-found.js'
 import errorHandlerMiddleware from './middleware/error-handler.js'
 
-app.use(express.json())
 app.use(express.static('public'))
+app.use(express.json())
 app.use(morgan('tiny'))
+app.use(cookieParser(process.env.JWT_SECRET)) //signing cookie
 
 app.get('/api/v1',(req, res)=>{
+    //  console.log(req.cookies);
+    console.log(req.signedCookies);//since we are using cookie-parser middleware with sign
+    
     res.send('hi there!! ')
 })
 
