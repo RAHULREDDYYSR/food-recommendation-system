@@ -5,6 +5,6 @@ import { createMoodFood, updateMoodFood, deleteMoodFood, getAllMoodFoods  } from
 app.post('/create',createMoodFood)
 app.patch('/update',updateMoodFood)
 app.delete('/delete',deleteMoodFood)
-app.get('/getAllMoodFoods',getAllMood)
+app.get('/getAllMoodFoods',getAllMoodFoods)
 
 export default app;
