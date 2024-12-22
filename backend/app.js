@@ -6,7 +6,9 @@ import 'express-async-errors'
 import cookieParser from 'cookie-parser';
 import { connectDB } from './db/connect.js';
 const app = express();
+//router routes
 import authRouter from './routes/authRoutes.js'
+import foodRouter from './routes/moodFoodRouter.js'
 
 //middleware
 import notFoundMiddleware from './middleware/not-found.js'
@@ -26,7 +28,7 @@ app.get('/api/v1',(req, res)=>{
 
 
 app.use('/api/v1/auth',authRouter);
-
+app.use('/api/v1/food',foodRouter);
 
 
 app.use(notFoundMiddleware);
