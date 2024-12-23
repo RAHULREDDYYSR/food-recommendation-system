@@ -1,7 +1,7 @@
 import {User} from '../models/User.js'
 import { StatusCodes } from 'http-status-codes'
 import CustomError from '../errors/index.js'
-import { attachCookiesToResponse} from '../utils/index.js'
+import { attachCookiesToResponse, createTokenUser} from '../utils/index.js'
 export const register = async(req, res)=>{
     const {email, name, password} = req.body
     const emailAlreadyExists = await User.findOne({email: email})
@@ -12,7 +12,7 @@ export const register = async(req, res)=>{
     const isFirstAccount = await User.countDocuments({}) 
     const role = isFirstAccount ? 'user' : 'admin'
     const user = await User.create({name,email,password,role});
-    const tokenUser = {name:user.name, userId:user.id, role:user.role}
+    const tokenUser = createTokenUser(user)
     attachCookiesToResponse({res, user:tokenUser})
     res.status(StatusCodes.CREATED).json({user:tokenUser})    
 
@@ -31,7 +31,7 @@ export const login =  async(req, res)=>{
     if(!isPasswordCorrect){
         throw new CustomError.UnauthenticatedError('Invalid credentials')
     }
-    const tokenUser = {name:user.name, userId:user.id, role:user.role}
+    const tokenUser = createTokenUser(user)
     attachCookiesToResponse({res, user:tokenUser})
     res.status(StatusCodes.OK).json({msg:'user login successful', user:tokenUser})
 }
