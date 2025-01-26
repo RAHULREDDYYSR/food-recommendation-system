@@ -10,10 +10,13 @@ const app = express();
 import userRouter from './routes/userRoutes.js'
 import authRouter from './routes/authRoutes.js'
 import foodRouter from './routes/moodFoodRouter.js'
+import foodItemRouter from './routes/foodItemRoutes.js'
 
 //middleware
 import notFoundMiddleware from './middleware/not-found.js'
 import errorHandlerMiddleware from './middleware/error-handler.js'
+
+import { seedDatabase } from './controllers/seedFoodItems.js';
 
 app.use(express.static('public'))
 app.use(express.json())
@@ -29,8 +32,9 @@ app.get('/api/v1',(req, res)=>{
 
 
 app.use('/api/v1/auth',authRouter);
-app.use('/api/v1/food',foodRouter);
+app.use('/api/v1/moodFood',foodRouter);
 app.use('/api/v1/user',userRouter);
+app.use('/api/v1/foodItem',foodItemRouter);
 
 
 app.use(notFoundMiddleware);
