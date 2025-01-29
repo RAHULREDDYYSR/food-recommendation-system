@@ -11,12 +11,15 @@ import userRouter from './routes/userRoutes.js'
 import authRouter from './routes/authRoutes.js'
 import foodRouter from './routes/moodFoodRouter.js'
 import foodItemRouter from './routes/foodItemRoutes.js'
+import recommendation from './routes/recommendationRoutes.js'
+
+import { aiChat } from './utils/aiRecommendation.js';
+
 
 //middleware
 import notFoundMiddleware from './middleware/not-found.js'
 import errorHandlerMiddleware from './middleware/error-handler.js'
 
-import { seedDatabase } from './controllers/seedFoodItems.js';
 
 app.use(express.static('public'))
 app.use(express.json())
@@ -35,7 +38,7 @@ app.use('/api/v1/auth',authRouter);
 app.use('/api/v1/moodFood',foodRouter);
 app.use('/api/v1/user',userRouter);
 app.use('/api/v1/foodItem',foodItemRouter);
-
+app.use('/api/v1/food/recommend',recommendation)
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware)
@@ -51,4 +54,17 @@ const start = async()=>{
     }
 }
 
+// let system_message = "You are an assistant that is great at telling jokes"
+// let user_prompt = "Tell a light-hearted joke for an audience of Data Scientists"
+// let prompts = [
+//     {"role": "system", "content": system_message},
+//     {"role": "user", "content": user_prompt}
+//   ]
+// const result = await aiChat(prompts)
+// console.log(result)
+
+// Usage
+// const mealData = getMealTime();
+// console.log(mealData.message); 
+// console.log('Meal type:', mealData.meal);
 start()
