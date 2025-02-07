@@ -7,7 +7,7 @@ import { aiChat,getNearbyRestaurants, getMealTime } from "../utils/index.js";
 export const recommendFood = async (req, res) =>{
     try {
         const userId = req.user.userId;
-        const {longitude, latitude, mood} = req.body
+        const {longitude, latitude, mood, user_context} = req.body
         const user = await User.findById(userId);
         const moodFood = await MoodFood.findOne({user:userId});
         if(!moodFood){
@@ -127,7 +127,8 @@ export const recommendFood = async (req, res) =>{
             a **Fruit Salad** for its refreshing taste and balance of nutrients,
              which can also keep things interesting and healthy."}
     ]}`
-        let userPrompt =  ` i am feeling ${mood}, provide me 3 food items 1 from my history moodfood and other 2 that best suites the time  `        
+        let userPrompt =  ` i am feeling ${mood}, provide me 3 food items 1 from my history moodfood and other 2 that best suites the time .`
+        userPrompt += `the extra food must be from ${user_context}`        
         let message = [
             {"role":"system","content":`${systemPrompt}`},
             {"role":"user","content":`${userPrompt}`}
@@ -135,7 +136,7 @@ export const recommendFood = async (req, res) =>{
         // console.log(message);
         const result = await aiChat(message)
         console.log(result);
-        res.status(StatusCodes.OK).json(result)
+        res.status(StatusCodes.OK).send(result)
 
     } catch (error) {
         res.status(StatusCodes.ERROR).json(error)

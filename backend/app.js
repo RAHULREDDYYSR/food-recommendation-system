@@ -10,10 +10,8 @@ const app = express();
 import userRouter from './routes/userRoutes.js'
 import authRouter from './routes/authRoutes.js'
 import foodRouter from './routes/moodFoodRouter.js'
-import foodItemRouter from './routes/foodItemRoutes.js'
 import recommendation from './routes/recommendationRoutes.js'
-
-import { aiChat } from './utils/aiRecommendation.js';
+import restaurants from './routes/restaurantsRoutes.js'
 
 
 //middleware
@@ -37,8 +35,9 @@ app.get('/api/v1',(req, res)=>{
 app.use('/api/v1/auth',authRouter);
 app.use('/api/v1/moodFood',foodRouter);
 app.use('/api/v1/user',userRouter);
-app.use('/api/v1/foodItem',foodItemRouter);
 app.use('/api/v1/food/recommend',recommendation)
+app.use('/api/v1/nearby/restaurants',restaurants)
+
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware)
@@ -68,3 +67,4 @@ const start = async()=>{
 // console.log(mealData.message); 
 // console.log('Meal type:', mealData.meal);
 start()
+
