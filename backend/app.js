@@ -41,7 +41,7 @@ app.use('/api/v1/nearby/restaurants',restaurants)
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware)
-const port =  process.env.PORT || 7777
+const port =  process.env.PORT || 8888
 
 const start = async()=>{
     try {

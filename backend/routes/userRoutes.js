@@ -4,11 +4,11 @@ import { getAllUsers, getSingleUser, showCurrentUser, updateUser, updateUserPass
 
 const app = express()
 
-app.route('/').get(authenticateUser,authorizePermission('admin'),getAllUsers);
+app.route('/').get(authenticateUser,authorizePermission('admin'),getAllUsers);// for admin 
 
-app.route('/showMe').get(authenticateUser,showCurrentUser)
-app.route('/updateUser').patch(updateUser)
-app.route('/updateUserPassword').patch(authenticateUser,updateUserPassword)
+app.route('/showMe').get(authenticateUser,showCurrentUser) // to get current user details
+app.route('/updateUser').patch(updateUser) // update user
+app.route('/updateUserPassword').patch(authenticateUser,updateUserPassword) // update user password by taking old and new password
 
 app.route('/:id').get(authenticateUser,getSingleUser);  // should be placed last
 
