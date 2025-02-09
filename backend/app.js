@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from "dotenv";
 dotenv.config();
 import morgan from 'morgan';
+import cors from 'cors'
 import 'express-async-errors'
 import cookieParser from 'cookie-parser';
 import { connectDB } from './db/connect.js';
@@ -18,7 +19,13 @@ import restaurants from './routes/restaurantsRoutes.js'
 import notFoundMiddleware from './middleware/not-found.js'
 import errorHandlerMiddleware from './middleware/error-handler.js'
 
-
+const corsOptions = {
+    origin: 'http://localhost:5173', // Replace with your frontend URL
+    credentials: true, // Allow cookies
+  };
+  
+  app.use(cors(corsOptions));
+  
 app.use(express.static('public'))
 app.use(express.json())
 app.use(morgan('tiny'))
@@ -38,10 +45,29 @@ app.use('/api/v1/user',userRouter);
 app.use('/api/v1/food/recommend',recommendation)
 app.use('/api/v1/nearby/restaurants',restaurants)
 
+import jwt from "jsonwebtoken";
+
+const getUser = (req, res) => {
+  try {
+    const { token } = req.signedCookies; // Access signed cookie
+
+    if (!token) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.status(200).json({ user: decoded });
+  } catch (error) {
+    res.status(401).json({ message: "Invalid token" });
+  }
+};
+
+app.get("/api/v1/auth/me", getUser);
+
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware)
-const port =  process.env.PORT || 8888
+const port =  process.env.PORT || 7777
 
 const start = async()=>{
     try {

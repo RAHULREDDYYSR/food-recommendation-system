@@ -17,10 +17,19 @@ export const getSingleUser = async (req, res) =>{
     res.status(StatusCodes.OK).json({user})
 }
 export const showCurrentUser = async (req, res) =>{
+    console.log(req.user);
+    
     res.status(StatusCodes.OK).json({user:req.user})
 }
 export const updateUser = async (req, res) =>{
-    res.send(' update user')
+    console.log(req.user);
+    
+    const user = await User.findOneAndUpdate({_id:req.user.userId}, req.body, {new:true, runValidators:true});
+    if(!user){
+        throw new CustomError.NotFoundError(`no user with id : ${req.user._id}`);
+        }
+        await user.save();
+        res.status(StatusCodes.OK).json({user})
 }
 export const updateUserPassword = async (req, res) =>{
    const {oldPassword, newPassword} = req.body;

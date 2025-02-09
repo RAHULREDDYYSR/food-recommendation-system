@@ -5,6 +5,6 @@ import {authenticateUser, authorizePermission} from '../middleware/authenticatio
 import express from "express";
 const app = express();
 
-app.get('/',authenticateUser,recommendFood) // to call the ai to recommend the food items, it takes user mood food history, time, location and users preferences
+app.post('/',authenticateUser,recommendFood) // to call the ai to recommend the food items, it takes user mood food history, time, location and users preferences
 
 export default app;

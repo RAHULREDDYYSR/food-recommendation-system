@@ -7,6 +7,8 @@ import { aiChat,getNearbyRestaurants, getMealTime } from "../utils/index.js";
 export const recommendFood = async (req, res) =>{
     try {
         const userId = req.user.userId;
+        console.log(userId);
+        
         const {longitude, latitude, mood, user_context} = req.body
         const user = await User.findById(userId);
         const moodFood = await MoodFood.findOne({user:userId});

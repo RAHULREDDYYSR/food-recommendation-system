@@ -46,8 +46,8 @@ const UserSchema = new mongoose.Schema({
     },
     height: {  
         type: Number,
-        min: [1.0, 'Height must be at least 1.0 meter'],
-        max: [2.5, 'Height must be less than or equal to 2.5 meters']
+        min: [140, 'Height must be at least 140 cm'],
+        max: [200, 'Height must be less than or equal to 200 cm']
     },
     bmi: {  
         type: Number,

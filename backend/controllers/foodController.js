@@ -16,7 +16,7 @@ export const createMoodFood = async (req, res) => {
             data: moodFood
         });        
     } catch (error) {
-        // Handle duplicate key error (code 11000)
+        
         if (error.code === 11000) {
             throw new CustomError.ConflictError('User can only have one MoodFood profile');
         }
@@ -39,11 +39,11 @@ export const currentMoodFood = async (req, res) =>{
 export const updateMoodFood = async (req, res) => {
     const { id: moodFoodId } = req.params;
     const userId = req.user.userId;
-    // Verify ownership and existence in a single query
+    
     const moodFood = await MoodFood.findOneAndUpdate(
         { 
             _id: moodFoodId,
-            user: userId  // Ensure user owns the document
+            user: userId 
         },
         req.body,
         { 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ModeToggle } from "./mood-toggle";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 
 export function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -13,12 +14,44 @@ export function Navbar() {
     setIsLoggedIn(!!token);
   }, []);
 
+  // Listen for login/logout updates
+  useEffect(() => {
+    const updateAuthState = () => {
+      setIsLoggedIn(!!localStorage.getItem("token"));
+    };
+    window.addEventListener("authChange", updateAuthState);
+    return () => window.removeEventListener("authChange", updateAuthState);
+  }, []);
+
   // Handle logout
-  const handleLogout = () => {
-    localStorage.removeItem("token"); // Remove the token
-    setIsLoggedIn(false); // Update state
-    navigate("/auth"); // Redirect to login page
+  const handleLogout = async () => {
+    try {
+      // Call backend logout API to clear cookies
+      await axios.get("http://localhost:7777/api/v1/auth/logout", { withCredentials: true });
+  
+      // Clear local storage and session storage
+      localStorage.clear();
+      sessionStorage.clear();
+  
+      // Completely remove all browsing history and prevent back navigation
+      window.location.replace("/auth");
+  
+      // Push a new empty history state to disable back button
+      setTimeout(() => {
+        window.history.pushState(null, null, "/auth");
+        window.history.replaceState(null, null, "/auth");
+      }, 50);
+  
+      // Reload the page to enforce logout
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
   };
+  
+  
 
   return (
     <nav className="border-b mx-5">
@@ -31,7 +64,7 @@ export function Navbar() {
             <Button variant="ghost">History</Button>
           </Link>
           <ModeToggle />
-
+          
           {isLoggedIn ? (
             <Button variant="destructive" onClick={handleLogout}>
               Logout

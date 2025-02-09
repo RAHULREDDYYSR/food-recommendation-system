@@ -59,7 +59,7 @@ export const getNearbyRestaurants = async (payload) => {
       };
     });
 
-    return { status: 200, data: restaurants.slice(0,5) };
+    return { data: restaurants.slice(0,5) };
   } catch (error) {
     console.error('Google Places API Error:', error.response?.data?.error_message || error.message);
     return { status: error.response?.status || 500, error: error.response?.data?.error_message || 'Failed to fetch nearby restaurants.' };
