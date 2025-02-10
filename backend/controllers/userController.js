@@ -18,8 +18,9 @@ export const getSingleUser = async (req, res) =>{
 }
 export const showCurrentUser = async (req, res) =>{
     console.log(req.user);
-    
-    res.status(StatusCodes.OK).json({user:req.user})
+    const {userId} = req.user;
+    const user = await User.findOne({_id:userId}).select('-password');
+    res.status(StatusCodes.OK).json({user})
 }
 export const updateUser = async (req, res) =>{
     console.log(req.user);

@@ -4,6 +4,7 @@ import AuthPage from "./pages/AuthPage";
 import { FoodRecommendations } from "./pages/FoodRecommendation";
 import { Dashboard } from "./pages/Dashboard";
 import { Navbar } from "./pages/Navbar";
+import History from "./pages/History"; // ✅ Default import
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function MainLayout() {
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/recommendations" element={<FoodRecommendations />} />
+        <Route path="/history" element={<History />} /> {/* ✅ Route now works */}
       </Routes>
     </>
   );

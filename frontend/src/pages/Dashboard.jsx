@@ -2,16 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
 import axios from "axios";
+import { motion } from "framer-motion";
+import { FaSpinner, FaLocationArrow, FaClock, FaUser } from "react-icons/fa";
 
 const moodEmojis = [
-  { emoji: "😊", label: "happy" },
-  { emoji: "😢", label: "sad" },
-  { emoji: "😠", label: "angry" },
-  { emoji: "😴", label: "sleepy" },
-  { emoji: "😎", label: "cool" },
-  { emoji: "🤔", label: "thoughtful" },
-  { emoji: "😋", label: "hungry" },
-  { emoji: "😰", label: "nervous" },
+  { emoji: "😊", label: "Happy", color: "from-yellow-400 to-yellow-500" },
+  { emoji: "😢", label: "Sad", color: "from-blue-400 to-blue-500" },
+  { emoji: "😠", label: "Angry", color: "from-red-400 to-red-500" },
+  { emoji: "😴", label: "Sleepy", color: "from-purple-400 to-purple-500" },
+  { emoji: "😎", label: "Cool", color: "from-green-400 to-green-500" },
+  { emoji: "🤔", label: "Thoughtful", color: "from-indigo-400 to-indigo-500" },
+  { emoji: "😋", label: "Hungry", color: "from-orange-400 to-orange-500" },
+  { emoji: "😰", label: "Nervous", color: "from-pink-400 to-pink-500" },
 ];
 
 export function Dashboard() {
@@ -19,24 +21,21 @@ export function Dashboard() {
   const [prompt, setPrompt] = useState("");
   const [userLocation, setUserLocation] = useState({ lat: null, long: null });
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false); // NEW: Loading state
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const BACKEND_URL = "http://localhost:7777/api/v1";
 
-  // Fetch user info from backend on component mount
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const response = await axios.get(`${BACKEND_URL}/auth/me`, {
-          withCredentials: true, // Sends cookies
+          withCredentials: true,
         });
-
-        setUser(response.data.user); // Store user info
+        setUser(response.data.user);
       } catch (error) {
-        console.error("User authentication failed:", error);
         toast.error("You need to log in first.");
-        navigate("/login");
+        navigate("/auth");
       }
     };
 
@@ -44,150 +43,132 @@ export function Dashboard() {
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setUserLocation({
-          lat: position.coords.latitude,
-          long: position.coords.longitude,
-        });
+        setUserLocation({ lat: position.coords.latitude, long: position.coords.longitude });
       },
       (error) => {
-        if (error.code === error.PERMISSION_DENIED) {
-          toast.error("Location permission denied. Please enable it.");
-        } else {
-          toast.error("Unable to access your location.");
-        }
+        toast.error("Location permission denied. Please enable it.");
       }
     );
   }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!selectedMood) {
-      toast.error("Please select a mood before submitting.");
-      return;
-    }
-
-    if (userLocation.lat === null || userLocation.long === null) {
-      toast.error("Location is required for recommendations.");
-      return;
-    }
-
-    if (!user) {
-      toast.error("User is not authenticated.");
-      navigate("/login");
-      return;
-    }
+    if (!selectedMood) return toast.error("Please select a mood before submitting.");
+    if (userLocation.lat === null || userLocation.long === null) return toast.error("Location is required.");
+    if (!user) return toast.error("User is not authenticated.");
 
     try {
-      setLoading(true); // Show loading screen
-
-      const payload = {
-        mood: selectedMood.label,
-        prompt,
-        latitude: userLocation.lat,
-        longitude: userLocation.long,
-      };
-
-      console.log("Submitting payload:", payload);
-
-      const response = await axios.post(`${BACKEND_URL}/food/recommend`, payload, {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-      });
-
+      setLoading(true);
+      const payload = { mood: selectedMood.label, prompt, latitude: userLocation.lat, longitude: userLocation.long };
+      const response = await axios.post(`${BACKEND_URL}/food/recommend`, payload, { withCredentials: true });
       toast.success("Recommendations received!");
-      console.log("Response:", response.data);
-
-      // Navigate with recommendations
       navigate("/recommendations", { state: { recommendations: response.data } });
     } catch (error) {
-      console.error("Error fetching recommendations:", error);
-      toast.error(error.response?.data?.message || "Failed to get recommendations.");
+      toast.error("Failed to get recommendations.");
     } finally {
-      setLoading(false); // Hide loading screen
+      setLoading(false);
     }
   };
 
   return (
-    <div className="container max-w-2xl mx-auto mt-8 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <Toaster position="top-center" reverseOrder={false} />
-
-      <h1 className="text-3xl font-bold mb-6">How are you feeling today?</h1>
-
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        {moodEmojis.map((mood, index) => (
-          <button
-            key={index}
-            className={`text-4xl p-8 border rounded-md transition-all ${
-              selectedMood === mood ? "bg-indigo-500 text-white" : "bg-white border-gray-300"
-            }`}
-            onClick={() => setSelectedMood(mood)}
-            disabled={loading} // Disable while loading
-          >
-            {mood.emoji}
-          </button>
-        ))}
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="prompt" className="block mb-2 text-sm font-medium">
-            Tell us more about your mood:
-          </label>
-          <textarea
-            id="prompt"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="I'm feeling..."
-            className="min-h-[100px] w-full border p-2 rounded-md"
-            disabled={loading} // Disable while loading
-          />
+      
+      
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        {/* Welcome Section */}
+        <div className="text-center space-y-6 mb-12">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+            How are you feeling today?
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-300">
+            Let's find the perfect meal to match your mood! 🍽️
+          </p>
         </div>
 
-        <button
-          type="submit"
-          className="w-full bg-indigo-600 text-white py-2 rounded-md flex justify-center items-center"
-          disabled={loading} // Disable button while loading
+        {/* Mood Selection Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {moodEmojis.map((mood, index) => (
+            <motion.button
+              key={index}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`
+                relative overflow-hidden rounded-2xl shadow-lg backdrop-blur-sm
+                ${selectedMood === mood 
+                  ? `bg-gradient-to-br ${mood.color} text-white ring-4 ring-red-500/50` 
+                  : 'bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700'}
+                transition-all duration-300 p-6 flex flex-col items-center
+              `}
+              onClick={() => setSelectedMood(mood)}
+              disabled={loading}
+            >
+              <span className="text-4xl mb-2">{mood.emoji}</span>
+              <span className="text-sm font-medium">{mood.label}</span>
+            </motion.button>
+          ))}
+        </div>
+
+        {/* Input Form */}
+        <motion.form 
+          onSubmit={handleSubmit}
+          className="space-y-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
         >
-          {loading ? (
-            <span className="flex items-center">
-              <svg
-                className="animate-spin h-5 w-5 mr-3 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8H4z"
-                ></path>
-              </svg>
-              Loading...
-            </span>
-          ) : (
-            "Get Food Recommendations"
-          )}
-        </button>
-      </form>
-
-      {/* Loading Screen */}
-      {loading && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <p className="text-lg font-semibold">Fetching Recommendations...</p>
-            <div className="mt-4 animate-spin rounded-full h-12 w-12 border-t-4 border-indigo-500"></div>
+          <div className="relative">
+            <textarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="Tell us more about your mood... (e.g., 'I just finished a workout' or 'I had a stressful day')"
+              className="w-full p-4 h-32 rounded-xl border-2 border-gray-200 dark:border-gray-600 
+                       bg-white/90 dark:bg-gray-700/90
+                       text-gray-900 dark:text-white placeholder-gray-500
+                       focus:border-red-500 focus:ring-2 focus:ring-red-500/50
+                       transition-all duration-300 resize-none"
+              disabled={loading}
+            />
           </div>
-        </div>
-      )}
+
+          <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex items-center space-x-1">
+              <FaLocationArrow className="text-red-500" />
+              <span>{userLocation.lat ? "Location enabled" : "Enable location"}</span>
+            </div>
+            {selectedMood && (
+              <span>Selected mood: {selectedMood.emoji} {selectedMood.label}</span>
+            )}
+          </div>
+
+          <motion.button
+            type="submit"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className={`
+              w-full py-4 px-6 rounded-xl font-medium text-lg
+              ${loading 
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600'}
+              text-white shadow-lg hover:shadow-xl
+              transform transition-all duration-300
+              flex items-center justify-center space-x-2
+            `}
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <FaSpinner className="animate-spin" />
+                <span>Finding perfect meals...</span>
+              </>
+            ) : (
+              <>
+                <span>Get Food Recommendations</span>
+                <span>🍳</span>
+              </>
+            )}
+          </motion.button>
+        </motion.form>
+      </div>
     </div>
   );
 }

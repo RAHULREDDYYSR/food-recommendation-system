@@ -13,6 +13,7 @@ import authRouter from './routes/authRoutes.js'
 import foodRouter from './routes/moodFoodRouter.js'
 import recommendation from './routes/recommendationRoutes.js'
 import restaurants from './routes/restaurantsRoutes.js'
+import weatherRoutes from './routes/weatherRoutes.js'
 
 
 //middleware
@@ -44,6 +45,7 @@ app.use('/api/v1/moodFood',foodRouter);
 app.use('/api/v1/user',userRouter);
 app.use('/api/v1/food/recommend',recommendation)
 app.use('/api/v1/nearby/restaurants',restaurants)
+app.use("/api/v1/weather", weatherRoutes);
 
 import jwt from "jsonwebtoken";
 

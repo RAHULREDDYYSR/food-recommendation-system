@@ -36,7 +36,8 @@ const UserSchema = new mongoose.Schema({
     },
     gender: {
         type: String,
-        enum: ['male', 'female']
+        enum: ['male', 'female'],
+        default: 'male'
     },
     weight: {  
         type: Number,
@@ -56,13 +57,6 @@ const UserSchema = new mongoose.Schema({
 });
 
 // Calculate BMI before saving
-UserSchema.pre('save', function(next) {
-    if (this.isModified('weight') || this.isModified('height')) {
-        this.bmi = this.weight / (this.height ** 2);
-        this.bmi = parseFloat(this.bmi.toFixed(1)); 
-    }
-    next();
-});
 
 // Password hashing middleware
 UserSchema.pre('save', async function() {
