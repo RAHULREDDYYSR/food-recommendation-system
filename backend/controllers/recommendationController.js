@@ -110,31 +110,34 @@ export const recommendFood = async (req, res) =>{
   }
 }
 `
-        let systemPrompt = `you are personalized food recommender`
-        systemPrompt += `you are provided with all the details of user: ${user}, current time: ${mealTime}`
-        systemPrompt += `along with all the details of moodFood based on his history : ${moodFood}`
-        systemPrompt += `and the location of the user longitude:${longitude} and latitude:${latitude} also provide one drink or dessert for the time. you can be creative and give yours
-         personal recommendations other then his moodfood history, consider users BMI explicitly`
-        systemPrompt +=`you can use only  1 food from users moodfood history,
-         and other 2 food items  different from moodfood history, consider best indian foods for that time, examples like ${mealTimeString}`
-        systemPrompt += "You should respond in JSON as in this example:"
-        systemPrompt += `
-    
-        {"systemMessage": "Since you're feeling bored, here are three food items from your moodFood history that can help lift your spirits:",
-        foods;[
-            {"1":"Samosa","reason":"Crispy pastry filled with spiced potatoes and peas, perfect for munching"},
-            {"2":"Dal Rice","reason":"Crunchy and flavorful, these bite-sized"},
-            {"3":"Chapati with Sabzi","reason":"Flaky and savory, these fried breads "},
-            {"extra":"Fruit Salad","reason":"Since you are 21 years old and weigh 70 kg, it might be beneficial to balance these indulgent snacks with something lighter.
-            a **Fruit Salad** for its refreshing taste and balance of nutrients,
-             which can also keep things interesting and healthy."}
-    ]}`
-        let userPrompt =  ` i am feeling ${mood}, provide me 3 food items 1 from my history moodfood and other 2 that best suites the time .`
-        userPrompt += `the extra food must be from ${user_context}`        
-        let message = [
-            {"role":"system","content":`${systemPrompt}`},
-            {"role":"user","content":`${userPrompt}`}
-        ]
+let systemPrompt = `You are a personalized food recommender.`
+systemPrompt += ` You are provided with user details: ${user}, current time: ${mealTime}, moodFood history: ${moodFood}, location (longitude:${longitude}, latitude:${latitude}), and user context: ${user_context}.`
+systemPrompt += ` Consider the user's BMI explicitly when making recommendations.`
+systemPrompt += ` Focus on recommending primarily Indian foods.`
+systemPrompt += ` Base the recommendations on these criteria and user's current mood:`
+systemPrompt += ` 1. **Time & Weather-Based:** Suggest one Indian food item suitable for the current time and weather conditions.`
+systemPrompt += ` 2. **History & BMI-Based:** Suggest one food item from the user's moodFood history, adjusted for their BMI to promote balanced eating.`
+systemPrompt += ` 3. **BMI-Considered:** Suggest one additional food item, different from their moodFood history, tailored to complement their BMI and promote overall health.`
+systemPrompt += ` Also, provide one drink or dessert recommendation based on the user description ${user_context} and must also compliment his/her ${user_context}.`
+systemPrompt += ` You can be creative and give your personal recommendations.`
+systemPrompt += ` Respond in JSON format, like this example:`
+systemPrompt += `{`
+systemPrompt += ` "systemMessage": "Here are some food recommendations tailored to your mood, the time of day, and your nutritional needs:",`
+systemPrompt += ` "foods": [`
+systemPrompt += ` {"1": "Food Name ", "reason": "Explanation of why this food is suitable for the current time ${mealTime} and weather."},`
+systemPrompt += ` {"2": "Food Name ", "reason": "Explanation of why this food is chosen from their history, considering their BMI."},`
+systemPrompt += ` {"3": "Food Name ", "reason": "Explanation of why this food is a good addition based on their BMI (mention high or low) and overall health."},`
+systemPrompt += ` {"extra": "Food Name", "reason": " compliment about users like ohh that great!! ${user_context} and provide a good meal that enhances his mood."}`
+systemPrompt += ` ]`
+systemPrompt += `}`
+
+let userPrompt = `I am feeling ${mood}. Provide me with 3 food items, Also suggest a suitable drink or dessert.`
+
+let message = [
+    {"role": "system", "content": systemPrompt},
+    {"role": "user", "content": userPrompt}
+]
+
         // console.log(message);
         const result = await aiChat(message)
         console.log(result);

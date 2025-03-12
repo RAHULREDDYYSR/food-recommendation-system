@@ -7,14 +7,15 @@ import { FaSpinner, FaLocationArrow, FaClock, FaUser } from "react-icons/fa";
 
 const moodEmojis = [
   { emoji: "😊", label: "Happy", color: "from-yellow-400 to-yellow-500" },
+  { emoji: "😐", label: "Bored", color: "from-gray-400 to-gray-500" },
+  { emoji: "😫", label: "Stressed", color: "from-red-400 to-red-500" },
   { emoji: "😢", label: "Sad", color: "from-blue-400 to-blue-500" },
-  { emoji: "😠", label: "Angry", color: "from-red-400 to-red-500" },
-  { emoji: "😴", label: "Sleepy", color: "from-purple-400 to-purple-500" },
-  { emoji: "😎", label: "Cool", color: "from-green-400 to-green-500" },
-  { emoji: "🤔", label: "Thoughtful", color: "from-indigo-400 to-indigo-500" },
-  { emoji: "😋", label: "Hungry", color: "from-orange-400 to-orange-500" },
-  { emoji: "😰", label: "Nervous", color: "from-pink-400 to-pink-500" },
+  { emoji: "🥺", label: "Lonely", color: "from-purple-400 to-purple-500" },
+  { emoji: "😴", label: "Tired", color: "from-indigo-400 to-indigo-500" },
+  { emoji: "😤", label: "Frustrated", color: "from-orange-400 to-orange-500" },
+  { emoji: "🙂", label: "Normal", color: "from-green-400 to-green-500" }
 ];
+
 
 export function Dashboard() {
   const [selectedMood, setSelectedMood] = useState(null);

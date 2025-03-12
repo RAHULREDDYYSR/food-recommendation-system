@@ -1,3 +1,9 @@
+/**
+ * AuthPage.jsx
+ * Last modified: 2025-03-11 08:28:18 UTC
+ * Modified by: RAHULREDDYYSR
+ */
+
 import React, { useState } from "react";
 import axios from "axios";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
@@ -18,8 +24,52 @@ export default function AuthPage() {
 
   const BACKEND_URL = "http://localhost:7777/api/v1/auth";
 
+  const validateForm = () => {
+    if (tab === "register") {
+      const age = parseInt(formData.age);
+      const height = parseInt(formData.height);
+      const weight = parseInt(formData.weight);
+
+      if (isNaN(age) || age < 16 || age > 100) {
+        toast.error("Age must be between 16 and 100 years");
+        return false;
+      }
+
+      if (isNaN(height) || height < 140 || height > 250) {
+        toast.error("Height must be between 140 and 250 cm");
+        return false;
+      }
+
+      if (isNaN(weight) || weight < 30 || weight > 150) {
+        toast.error("Weight must be between 30 and 150 kg");
+        return false;
+      }
+
+      if (!formData.name.trim()) {
+        toast.error("Please enter your name");
+        return false;
+      }
+    }
+
+    if (!formData.email.trim()) {
+      toast.error("Please enter your email");
+      return false;
+    }
+
+    if (!formData.password.trim()) {
+      toast.error("Please enter your password");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
   };
 
   const calculateBMI = (height, weight) => {
@@ -30,6 +80,11 @@ export default function AuthPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       const endpoint = tab === "login" ? `${BACKEND_URL}/login` : `${BACKEND_URL}/register`;
       const bmi = tab === "register" ? calculateBMI(formData.height, formData.weight) : null;
@@ -110,13 +165,14 @@ export default function AuthPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Age
+                    Age (16-100)
                   </label>
                   <input
                     type="number"
                     name="age"
                     value={formData.age}
                     onChange={handleChange}
+                    placeholder="16-100"
                     required
                     className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 transition-all"
                   />
@@ -139,26 +195,28 @@ export default function AuthPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Height (cm)
+                    Height (140-250 cm)
                   </label>
                   <input
                     type="number"
                     name="height"
                     value={formData.height}
                     onChange={handleChange}
+                    placeholder="140-250"
                     required
                     className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 transition-all"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Weight (kg)
+                    Weight (30-150 kg)
                   </label>
                   <input
                     type="number"
                     name="weight"
                     value={formData.weight}
                     onChange={handleChange}
+                    placeholder="30-150"
                     required
                     className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 transition-all"
                   />
